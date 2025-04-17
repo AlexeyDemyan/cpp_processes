@@ -5,16 +5,38 @@
 #include <iostream>
 #include <processthreadsapi.h>
 
-int main()
+// void GetProcessNameById(DWORD pId)
+// {
+
+// }
+
+int ListProcesses()
 {
     DWORD processes[1024], cbNeeded, cbProcesses;
 
+    // Enumerating all processes
     BOOL procBool = EnumProcesses(processes, sizeof(processes), &cbNeeded);
 
-    std::cout << "Here are the process ids: \n"
-              << processes[4] << "\n"
-              << "And here is the byte count: \n"
-              << &cbNeeded;
+    if (!procBool)
+    {
+        std::cout << "Unable to fetch processes\n";
+        return 1;
+    }
 
-    HANDLE procInfo = OpenProcess();
+    // This is basically the amount of currently running processes
+    cbProcesses = cbNeeded / sizeof(DWORD);
+
+    std::cout << "Value of cbProcesses: " << cbProcesses << "\n";
+
+    for (int i = 0; i < cbProcesses; i++)
+    {
+        // For the time being, just printing the process ID here instead of process name
+        std::cout << "Id of procces: " << processes[i] << "\n";
+    }
+    return 0;
+}
+
+int main()
+{
+    ListProcesses();
 }

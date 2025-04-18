@@ -7,7 +7,7 @@
 
 int GAME_POINTER_OFFSET = 0x7030;
 int PLAYER_HEALTH_OFFSET = 0x4;
-LPVOID buffer;
+LPVOID buffer[4];
 SIZE_T lpNumberOfBytesRead;
 
 BOOL lookForMyProcess(TCHAR *processName)
@@ -47,35 +47,35 @@ void GetProcessNameById(DWORD pId)
             if (lookForMyProcess(procName))
             {
                 LPMODULEINFO lpmodinfo;
-                
+
                 GetModuleInformation(hProcess, hMod, lpmodinfo, sizeof(lpmodinfo));
                 std::cout << "Here is value of lpmodinfo: " << lpmodinfo << "\n";
                 std::cout << "Reading process memory: \n";
-                ReadProcessMemory(hProcess, lpmodinfo, buffer, 4, &lpNumberOfBytesRead);
+                ReadProcessMemory(hProcess, lpmodinfo, &buffer, 0x4, &lpNumberOfBytesRead);
                 printf("\n Error Code: %d \n", GetLastError());
                 std::cout << "Here is what we have in process memory buffer: " << buffer << "\n";
                 std::cout << "Here is what we have in process memory buffer derefed: " << &buffer << "\n";
                 std::cout << "Here is amount of bytes read: " << lpNumberOfBytesRead << "\n";
-                
-                // LPMODULEINFO gamePointer = lpmodinfo + GAME_POINTER_OFFSET;
-                // std::cout << "This is supposed to be game pointer:" << lpmodinfo + GAME_POINTER_OFFSET << "\n";
-                // std::cout << "Let me read its value " << &gamePointer << "\n";
-                // std::cout << "Reading process memory: \n";
-                // ReadProcessMemory(hProcess, gamePointer, buffer, 4, &lpNumberOfBytesRead);
-                // printf("\n Error Code: %d \n", GetLastError());
-                // std::cout << "Here is what we have in process memory buffer: " << buffer << "\n";
-                // std::cout << "Here is what we have in process memory buffer derefed: " << &buffer << "\n";
-                // std::cout << "Here is amount of bytes read: " << lpNumberOfBytesRead << "\n";
 
-                // LPMODULEINFO health = gamePointer + 4;
-                // std::cout << "Maybe health is here:" << &health << "\n";
-                // std::cout << "Maybe health is here:" << health << "\n";
-                // std::cout << "Reading process memory: \n";
-                // ReadProcessMemory(hProcess, health, buffer, 4, &lpNumberOfBytesRead);
-                // printf("\n Error Code: %d \n", GetLastError());
-                // std::cout << "Here is what we have in process memory buffer: " << buffer << "\n";
-                // std::cout << "Here is what we have in process memory buffer derefed: " << &buffer << "\n";
-                // std::cout << "Here is amount of bytes read: " << lpNumberOfBytesRead << "\n";
+                LPMODULEINFO gamePointer = lpmodinfo + GAME_POINTER_OFFSET;
+                std::cout << "This is supposed to be game pointer:" << lpmodinfo + GAME_POINTER_OFFSET << "\n";
+                std::cout << "Let me read its value " << &gamePointer << "\n";
+                std::cout << "Reading process memory: \n";
+                ReadProcessMemory(hProcess, gamePointer, &buffer, 4, &lpNumberOfBytesRead);
+                printf("\n Error Code: %d \n", GetLastError());
+                std::cout << "Here is what we have in process memory buffer: " << buffer << "\n";
+                std::cout << "Here is what we have in process memory buffer derefed: " << &buffer << "\n";
+                std::cout << "Here is amount of bytes read: " << lpNumberOfBytesRead << "\n";
+
+                LPMODULEINFO health = gamePointer + 4;
+                std::cout << "Maybe health is here:" << &health << "\n";
+                std::cout << "Maybe health is here:" << health << "\n";
+                std::cout << "Reading process memory: \n";
+                ReadProcessMemory(hProcess, health, &buffer, 4, &lpNumberOfBytesRead);
+                printf("\n Error Code: %d \n", GetLastError());
+                std::cout << "Here is what we have in process memory buffer: " << buffer << "\n";
+                std::cout << "Here is what we have in process memory buffer derefed: " << &buffer << "\n";
+                std::cout << "Here is amount of bytes read: " << lpNumberOfBytesRead << "\n";
             };
         }
     }

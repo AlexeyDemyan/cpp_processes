@@ -5,19 +5,20 @@
 #include <iostream>
 #include <processthreadsapi.h>
 
-void lookForMyProcess(TCHAR *processName, std::string mySearchedProcessName)
-{   
-    
-    // std::cout << "Here's first character in processName TCHAR:" << processName[0] << "\n";
-    TCHAR toFind[] = _T("chrome.exe");
-    if(_tcscmp(processName, toFind) == 0) {
-        std::cout << "Found match!! : " << processName << "\n";
-    }
+int GAME_POINTER_OFFSET = 0x7030;
+int PLAYER_HEALTH_OFFSET = 0x4;
+LPVOID buffer;
+SIZE_T lpNumberOfBytesRead;
 
-    // if (*processName == mySearchedProcessName) {
-    //     std::cout << "Found match!! : " << mySearchedProcessName << "\n";
-    // }
-    // std::cout << "Reading process name in my function:" << processName << "\n";
+BOOL lookForMyProcess(TCHAR *processName)
+{
+    TCHAR toFind[] = _T("game-loop.exe");
+    if (_tcscmp(processName, toFind) == 0)
+    {
+        std::cout << "Found match!! : " << processName << "\n";
+        return TRUE;
+    }
+    return FALSE;
 }
 
 void GetProcessNameById(DWORD pId)
@@ -43,7 +44,39 @@ void GetProcessNameById(DWORD pId)
             // and then this name we're writing to a buffer
             DWORD baseName = GetModuleBaseName(hProcess, hMod, procName, sizeof(procName) / sizeof(TCHAR));
             // std::cout << "Here's the process name from the buffer: " << procName << '\n';
-            lookForMyProcess(procName, "chrome.exe");
+            if (lookForMyProcess(procName))
+            {
+                LPMODULEINFO lpmodinfo;
+                
+                GetModuleInformation(hProcess, hMod, lpmodinfo, sizeof(lpmodinfo));
+                std::cout << "Here is value of lpmodinfo: " << lpmodinfo << "\n";
+                std::cout << "Reading process memory: \n";
+                ReadProcessMemory(hProcess, lpmodinfo, buffer, 4, &lpNumberOfBytesRead);
+                printf("\n Error Code: %d \n", GetLastError());
+                std::cout << "Here is what we have in process memory buffer: " << buffer << "\n";
+                std::cout << "Here is what we have in process memory buffer derefed: " << &buffer << "\n";
+                std::cout << "Here is amount of bytes read: " << lpNumberOfBytesRead << "\n";
+                
+                // LPMODULEINFO gamePointer = lpmodinfo + GAME_POINTER_OFFSET;
+                // std::cout << "This is supposed to be game pointer:" << lpmodinfo + GAME_POINTER_OFFSET << "\n";
+                // std::cout << "Let me read its value " << &gamePointer << "\n";
+                // std::cout << "Reading process memory: \n";
+                // ReadProcessMemory(hProcess, gamePointer, buffer, 4, &lpNumberOfBytesRead);
+                // printf("\n Error Code: %d \n", GetLastError());
+                // std::cout << "Here is what we have in process memory buffer: " << buffer << "\n";
+                // std::cout << "Here is what we have in process memory buffer derefed: " << &buffer << "\n";
+                // std::cout << "Here is amount of bytes read: " << lpNumberOfBytesRead << "\n";
+
+                // LPMODULEINFO health = gamePointer + 4;
+                // std::cout << "Maybe health is here:" << &health << "\n";
+                // std::cout << "Maybe health is here:" << health << "\n";
+                // std::cout << "Reading process memory: \n";
+                // ReadProcessMemory(hProcess, health, buffer, 4, &lpNumberOfBytesRead);
+                // printf("\n Error Code: %d \n", GetLastError());
+                // std::cout << "Here is what we have in process memory buffer: " << buffer << "\n";
+                // std::cout << "Here is what we have in process memory buffer derefed: " << &buffer << "\n";
+                // std::cout << "Here is amount of bytes read: " << lpNumberOfBytesRead << "\n";
+            };
         }
     }
 
@@ -70,8 +103,6 @@ int ListProcesses()
 
     for (int i = 0; i < cbProcesses; i++)
     {
-        // For the time being, just printing the process ID here instead of process name
-        // std::cout << "Id of procces: " << processes[i] << "\n";
         GetProcessNameById(processes[i]);
     }
     return 0;

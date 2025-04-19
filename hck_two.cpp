@@ -7,12 +7,13 @@
 
 int GAME_POINTER_OFFSET = 0x7030;
 int PLAYER_HEALTH_OFFSET = 0x4;
-LPVOID buffer[4];
-SIZE_T lpNumberOfBytesRead;
+
+BYTE buffer[4];
+SIZE_T lpNumberOfBytesRead = 0;
 
 BOOL lookForMyProcess(TCHAR *processName)
 {
-    TCHAR toFind[] = _T("game-loop.exe");
+    TCHAR toFind[] = _T("chrome.exe");
     if (_tcscmp(processName, toFind) == 0)
     {
         std::cout << "Found match!! : " << processName << "\n";
@@ -46,36 +47,41 @@ void GetProcessNameById(DWORD pId)
             // std::cout << "Here's the process name from the buffer: " << procName << '\n';
             if (lookForMyProcess(procName))
             {
-                LPMODULEINFO lpmodinfo;
+                MODULEINFO lpmodinfo;
 
-                GetModuleInformation(hProcess, hMod, lpmodinfo, sizeof(lpmodinfo));
-                std::cout << "Here is value of lpmodinfo: " << lpmodinfo << "\n";
+                GetModuleInformation(hProcess, hMod, &lpmodinfo, sizeof(lpmodinfo));
+                std::cout << "Here is value of lpmodinfo: " << &lpmodinfo << "\n";
                 std::cout << "Reading process memory: \n";
-                ReadProcessMemory(hProcess, lpmodinfo, &buffer, 0x4, &lpNumberOfBytesRead);
-                printf("\n Error Code: %d \n", GetLastError());
-                std::cout << "Here is what we have in process memory buffer: " << buffer << "\n";
-                std::cout << "Here is what we have in process memory buffer derefed: " << &buffer << "\n";
-                std::cout << "Here is amount of bytes read: " << lpNumberOfBytesRead << "\n";
+                if (ReadProcessMemory(hProcess, lpmodinfo.lpBaseOfDll, buffer, sizeof(buffer), &lpNumberOfBytesRead))
+                {
+                    std::cout << "Here is what we have in process memory buffer: " << buffer << "\n";
+                    std::cout << "Here is what we have in process memory buffer derefed: " << &buffer << "\n";
+                    std::cout << "Here is amount of bytes read: " << lpNumberOfBytesRead << "\n";
+                }
+                else
+                {
+                    printf("\n Error Code: %d \n", GetLastError());
+                }
 
-                LPMODULEINFO gamePointer = lpmodinfo + GAME_POINTER_OFFSET;
-                std::cout << "This is supposed to be game pointer:" << lpmodinfo + GAME_POINTER_OFFSET << "\n";
-                std::cout << "Let me read its value " << &gamePointer << "\n";
-                std::cout << "Reading process memory: \n";
-                ReadProcessMemory(hProcess, gamePointer, &buffer, 4, &lpNumberOfBytesRead);
-                printf("\n Error Code: %d \n", GetLastError());
-                std::cout << "Here is what we have in process memory buffer: " << buffer << "\n";
-                std::cout << "Here is what we have in process memory buffer derefed: " << &buffer << "\n";
-                std::cout << "Here is amount of bytes read: " << lpNumberOfBytesRead << "\n";
+                // LPMODULEINFO gamePointer = lpmodinfo + GAME_POINTER_OFFSET;
+                // std::cout << "This is supposed to be game pointer:" << lpmodinfo + GAME_POINTER_OFFSET << "\n";
+                // std::cout << "Let me read its value " << &gamePointer << "\n";
+                // std::cout << "Reading process memory: \n";
+                // ReadProcessMemory(hProcess, gamePointer, &buffer, 4, &lpNumberOfBytesRead);
+                // printf("\n Error Code: %d \n", GetLastError());
+                // std::cout << "Here is what we have in process memory buffer: " << buffer << "\n";
+                // std::cout << "Here is what we have in process memory buffer derefed: " << &buffer << "\n";
+                // std::cout << "Here is amount of bytes read: " << lpNumberOfBytesRead << "\n";
 
-                LPMODULEINFO health = gamePointer + 4;
-                std::cout << "Maybe health is here:" << &health << "\n";
-                std::cout << "Maybe health is here:" << health << "\n";
-                std::cout << "Reading process memory: \n";
-                ReadProcessMemory(hProcess, health, &buffer, 4, &lpNumberOfBytesRead);
-                printf("\n Error Code: %d \n", GetLastError());
-                std::cout << "Here is what we have in process memory buffer: " << buffer << "\n";
-                std::cout << "Here is what we have in process memory buffer derefed: " << &buffer << "\n";
-                std::cout << "Here is amount of bytes read: " << lpNumberOfBytesRead << "\n";
+                // LPMODULEINFO health = gamePointer + 4;
+                // std::cout << "Maybe health is here:" << &health << "\n";
+                // std::cout << "Maybe health is here:" << health << "\n";
+                // std::cout << "Reading process memory: \n";
+                // ReadProcessMemory(hProcess, health, &buffer, 4, &lpNumberOfBytesRead);
+                // printf("\n Error Code: %d \n", GetLastError());
+                // std::cout << "Here is what we have in process memory buffer: " << buffer << "\n";
+                // std::cout << "Here is what we have in process memory buffer derefed: " << &buffer << "\n";
+                // std::cout << "Here is amount of bytes read: " << lpNumberOfBytesRead << "\n";
             };
         }
     }

@@ -21,7 +21,7 @@ BOOL lookForMyProcess(TCHAR *processName)
 
 void GetProcessNameById(DWORD pId)
 {
-    HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pId);
+    HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_VM_OPERATION, FALSE, pId);
 
     TCHAR procName[MAX_PATH] = _T("<Unknown>");
 
@@ -64,6 +64,15 @@ void GetProcessNameById(DWORD pId)
                                 if (ReadProcessMemory(hProcess, (LPCVOID)healthAddr, &playerHealth, sizeof(playerHealth), &bytesRead))
                                 {
                                     std::cout << "[+] Player Health: " << std::dec << playerHealth << std::endl;
+
+                                    int newHealthValue = 857;
+                                    SIZE_T bytesWritten = 0;
+
+                                    if (WriteProcessMemory(hProcess, (LPVOID)healthAddr, &newHealthValue, sizeof(newHealthValue), &bytesWritten)) {
+                                        std::cout << "[+] Managed to overwrite Player Health, new value is: " << std::dec << newHealthValue << std::endl;
+                                    } else {
+                                        std::cerr << "[-] Failed to overwrite Player Health. Error: " << GetLastError() << std::endl;
+                                    }
                                 }
                                 else
                                 {

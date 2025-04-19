@@ -67,7 +67,11 @@
         "text_encoding": "cpp",
         "variant": "cpp",
         "cstdarg": "cpp",
-        "set": "cpp"
+        "set": "cpp",
+        "ratio": "cpp",
+        "semaphore": "cpp",
+        "stop_token": "cpp",
+        "thread": "cpp"
     },
     "dotnet.defaultSolution": "ConsoleApp1.sln"
 }

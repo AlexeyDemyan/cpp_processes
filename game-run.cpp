@@ -9,6 +9,10 @@ struct Player
     void yell() {
         std::cout << "Raaragdkjhdk!" << std::endl;
     };
+
+    void speak() {
+        std::cout << "Howdy! How you doing?" << std:: endl;
+    }
 };
 
 struct Game
@@ -47,6 +51,7 @@ int main()
                         pGame->player->health--;
                         std::cout << "After taking 1 damage, Player's remaining health is: " 
                             << pGame->player->health << std::endl;
+                        pGame->player->speak();
                         break;
                     case VK_ESCAPE:
                         return 0;

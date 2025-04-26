@@ -14,7 +14,7 @@ const server = http.createServer((req, res) => {
         if (req.method === 'POST') {
             res.writeHead(200, { 'Content-Type': 'text/plain' });
             res.end('Received POST request!');
-            client.write('786');
+            client.write('654865486');
         } else {
             res.writeHead(200, { 'Content-Type': 'text/plain' });
             res.end('Basic server running!');

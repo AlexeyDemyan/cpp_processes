@@ -23,7 +23,8 @@ void GetProcessNameById(DWORD pId)
 
         // enumerating process modules
         if (EnumProcessModules(hProcess, &hMod, sizeof(hMod), &cbNeeded))
-        {
+        {   
+            std::cout << "Managed to Enumerate Process Modules! \n";
             // getting the base module name, which is actually the name of the process
             // and then this name we're writing to a buffer
             DWORD baseName = GetModuleBaseName(hProcess, hMod, procName, sizeof(procName) / sizeof(TCHAR));
@@ -53,10 +54,10 @@ int ListProcesses()
     std::cout << "Value of cbProcesses: " << cbProcesses << "\n";
 
     for (int i = 0; i < cbProcesses; i++)
-    {
+    {   
         // For the time being, just printing the process ID here instead of process name
-        // std::cout << "Id of procces: " << processes[i] << "\n";
-        GetProcessNameById(processes[i]);
+        std::cout << "Id of procces: " << processes[i] << "\n";
+        // GetProcessNameById(processes[i]);
     }
     return 0;
 }
